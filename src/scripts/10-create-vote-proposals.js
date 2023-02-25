@@ -4,9 +4,9 @@ import { ethers } from "ethers";
 (async () => {
   try {
     // This is our governance contract.
-    const vote = await sdk.getContract("INSERT_VOTE_ADDRESS", "vote");
+    const vote = await sdk.getContract("0x83FB325a7C94274E24E07cb7f6C5F16484fb9Cf7", "vote");
     // This is our ERC-20 contract.
-    const token = await sdk.getContract("INSERT_TOKEN_ADDRESS", "token");
+    const token = await sdk.getContract("0xAe8879c810cb8Ad2409B36f52FeaeC96EaEB0B5f", "token");
     // Create proposal to mint 420,000 new token to the treasury.
     const amount = 420_000;
     const description = "Should the DAO mint an additional " + amount + " tokens into the treasury?";

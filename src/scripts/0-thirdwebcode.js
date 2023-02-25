@@ -4,13 +4,11 @@ import {
   ConnectWallet,
   Web3Button,
   useTokenBalance,
-  useBalance,
 } from '@thirdweb-dev/react';
 import { Phoenix } from "@thirdweb-dev/chains";
 import { useState, useEffect, useMemo, } from 'react';
 import { AddressZero } from '@ethersproject/constants';
 import { useAccount } from 'wagmi';
-
 
 // const { contract } = useContract(tokenAddress);
 // const balance = await contract.balanceOf(walletAddress);
@@ -37,14 +35,12 @@ const App = () => {
   const voteAddress = '0x83FB325a7C94274E24E07cb7f6C5F16484fb9Cf7';
   const { contract: vote } = useContract(
     voteAddress,
-    'vote', 
+    'vote',
   );
   // Hook to check if the user has our token
-  const useBalanceData = useBalance(address);
   const tokenBalanceData = useTokenBalance(token, address, '0');
   const tokenBalance = tokenBalanceData.data;
-  const balance = useBalanceData;
-  const amounts = balance;
+  //  return tokenBalance;
 
   // Holds the amount of token each member has in state.
   const [memberTokenAmounts, setMemberTokenAmounts] = useState([]);
@@ -145,7 +141,7 @@ const App = () => {
     getAllBalances();
   }, [tokenBalance]);
 
-// Now, we combine the memberAddresses and memberTokenAmounts into a single array
+  // Now, we combine the memberAddresses and memberTokenAmounts into a single array
   const memberList = useMemo(() => {
     return memberAddresses.map((address) => {
       // We're checking if we are finding the address in the memberTokenAmounts array.
@@ -158,17 +154,18 @@ const App = () => {
 
       return {
         address,
-        tokenAmount: member ? memberList.balance.displayValue : '0',
+        tokenAmount: member ? member.balance.displayValue : '0',
       };
     });
   }, [memberAddresses, memberTokenAmounts]);
-   const tokenAmount = memberTokenAmounts;
+
+
   // This is the case where the user hasn't connected their wallet
   // to your web app. Let them call connectWallet.
   if (!address) {
     return (
       <div className="landing">
-        <h1>🤖Welcome to GPHX DAO</h1>
+        <h1>Welcome to GPHX DAO</h1>
         <div className="btn-hero">
           <ConnectWallet />
         </div>
@@ -181,16 +178,16 @@ const App = () => {
   {
     return (
       <div className="member-page">
-        <h1>🤖DAO Member Page</h1>
+        <h1>🍪DAO Member Page</h1>
         <p>Phoenix Powered Dao</p>
         <div>
           <div>
-            <h2>💰Member List💰</h2> 
+            <h2>Member List</h2>
             <table className="card">
               <thead>
                 <tr>
-                  <td>Address {shortenAddress(address)}</td>
-                  <td>KFC Amount {tokenBalance?.displayValue}</td>
+                  <th>Address{}</th>
+                  <td>KFC Amount {}</td>
                 </tr>
               </thead>
               <tbody>
