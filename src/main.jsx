@@ -14,7 +14,7 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
-    <ThirdwebProvider activeChain={activeChain}>
+    <ThirdwebProvider activeChain={Phoenix}>
       <App />
     </ThirdwebProvider>
   </React.StrictMode>

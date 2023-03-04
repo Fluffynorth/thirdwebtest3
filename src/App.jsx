@@ -7,9 +7,9 @@ import {
   useBalance,
 } from '@thirdweb-dev/react';
 import { Phoenix } from "@thirdweb-dev/chains";
-import { useState, useEffect, useMemo, } from 'react';
+import { useState, useEffect } from 'react';
 import { AddressZero } from '@ethersproject/constants';
-import { useAccount } from 'wagmi';
+
 
 
 // const { contract } = useContract(tokenAddress);
@@ -18,13 +18,7 @@ import { useAccount } from 'wagmi';
 const activeChain = Phoenix;
 const App = () => {
   // Use the hooks thirdweb give us.
-  const address = useAddress('0x86108c13cA668d99a8D15429C7fb531Cd5a58418');
-  const App = () => {
-
-    return (
-      <ThirdwebProvider activeChain={activeChain}>{/* {...} */}</ThirdwebProvider>
-    );
-  };
+  const address = useAddress();
 
   // Initialize our token contract
   const tokenAddress = '0xAe8879c810cb8Ad2409B36f52FeaeC96EaEB0B5f';
@@ -39,6 +33,7 @@ const App = () => {
     voteAddress,
     'vote', 
   );
+  
   // Hook to check if the user has our token
   const useBalanceData = useBalance(address);
   const tokenBalanceData = useTokenBalance(token, address, '0');
@@ -46,10 +41,10 @@ const App = () => {
   const balance = useBalanceData;
   const amounts = balance;
 
-  // Holds the amount of token each member has in state.
-  const [memberTokenAmounts, setMemberTokenAmounts] = useState([]);
-  // The array holding all of our members addresses.
-  const [memberAddresses, setMemberAddresses] = useState([]);
+  // Holds the amount of token each  has in state.
+  const [TokenAmounts, setTokenAmounts] = useState([]);
+  // The array holding all of our s addresses.
+  const [Addresses, setAddresses] = useState([]);
 
   // A fancy function to shorten someones wallet address, no need to show the whole thing.
   const shortenAddress = (str) => {
@@ -62,7 +57,7 @@ const App = () => {
 
   // Retrieve all our existing proposals from the contract.
   useEffect(() => {
-    if (!tokenBalance) {
+    if (tokenBalance) {
       return;
     }
 
@@ -81,13 +76,13 @@ const App = () => {
 
   // We also need to check if the user already voted.
   useEffect(() => {
-    if (!hasVoted) {
+    if (tokenBalance) {
       return;
     }
 
     // If we haven't finished retrieving the proposals from the useEffect above
     // then we can't check if the user voted yet!
-    if (!tokenBalance) {
+    if (!proposals.length) {
       return;
     }
 
@@ -107,27 +102,29 @@ const App = () => {
     checkIfUserHasVoted();
   }, [proposals, address, vote]);
 
-  // This useEffect grabs all the addresses of our members holding our token.
+  // This useEffect grabs all the addresses holding our token.
   useEffect(() => {
     if (!tokenBalance) {
       return;
     }
+    const activeProposals = proposals.filter((proposal) => proposal.state === 'active');
+    const inactiveProposals = proposals.filter((proposal) => proposal.state !== 'active');
 
     // Just like we did in the 7-airdrop-token.js file! Grab the users who hold our token
     // with tokenId 0.
     const getAllAddresses = async () => {
       try {
-        const memberAddresses = await token?.history.getAllHolderBalances(0);
-          await token?.history.getAllHolderBalances(0);
-        setMemberAddresses(memberAddresses);
+        const Addresses = await token?.history.getAllHolderBalances();
+          await token?.history.getAllHolderBalances();
+        setAddresses(Addresses);
       } catch (error) {
-        console.error('failed to get member list', error);
+        console.error('failed to get list', error);
       }
     };
     getAllAddresses();
   }, [tokenBalance]);
 
-  // This useEffect grabs the # of token each member holds.
+  // This useEffect grabs the # of token each  holds.
   useEffect(() => {
     if (!tokenBalance) {
       return;
@@ -136,39 +133,38 @@ const App = () => {
     const getAllBalances = async () => {
       try {
         const amounts = await token?.history.getAllHolderBalances();
-        setMemberTokenAmounts(amounts);
+        setTokenAmounts(amounts);
         console.log('👜 Amounts', amounts);
       } catch (error) {
-        console.error('failed to get member balances', error);
+        console.error('failed to get balances', error);
       }
     };
     getAllBalances();
   }, [tokenBalance]);
 
-// Now, we combine the memberAddresses and memberTokenAmounts into a single array
-  const memberList = useMemo(() => {
-    return memberAddresses.map((address) => {
-      // We're checking if we are finding the address in the memberTokenAmounts array.
+// Now, we combine the Addresses and TokenAmounts into a single array
+  const List = (() => {
+    return Addresses.map((address) => {
+      // We're checking if we are finding the address in the TokenAmounts array.
       // If we are, we'll return the amount of token the user has.
       // Otherwise, return 0.
-//      const memberTokenAmounts = member
-      const member = memberTokenAmounts?.find(
-        ({ holder }) => holder === address,
-      );
+      const TokenAmounts = tokenBalance.amounts
+const List = TokenAmounts?.find(({ holder }) => holder === address);
+
 
       return {
         address,
-        tokenAmount: member ? memberList.balance.displayValue : '0',
+        tokenAmount: List ? List.balance.displayValue : '0',
       };
     });
-  }, [memberAddresses, memberTokenAmounts]);
-   const tokenAmount = memberTokenAmounts;
+  }, [Addresses, TokenAmounts]);
+
   // This is the case where the user hasn't connected their wallet
   // to your web app. Let them call connectWallet.
   if (!address) {
     return (
       <div className="landing">
-        <h1>🤖Welcome to GPHX DAO</h1>
+        <h1>🐔Welcome to GPHX DAO</h1>
         <div className="btn-hero">
           <ConnectWallet />
         </div>
@@ -177,15 +173,15 @@ const App = () => {
   }
 
   // If the user has already claimed their token we want to display the interal DAO page to them
-  // only DAO members will see this. Render all the members + token amounts.
+  // only DAO s will see this. Render all the s + token amounts.
   {
     return (
-      <div className="member-page">
-        <h1>🤖DAO Member Page</h1>
+      <div className="-page">
+        <h1>🐔DAO  Page</h1>
         <p>Phoenix Powered Dao</p>
         <div>
           <div>
-            <h2>💰Member List💰</h2> 
+            <h2>💰Member💰</h2> 
             <table className="card">
               <thead>
                 <tr>
@@ -194,30 +190,28 @@ const App = () => {
                 </tr>
               </thead>
               <tbody>
-  {() => {
-    return (
-      <tr key={address}>
-        <td>{shortenAddress(address)}</td>
-        <td>{tokenBalance}</td>
-      </tr>
-    );
-  }}
-</tbody>
-            </table>
-          </div>
-          <div>
-            <h2>Active Proposals</h2>
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+          {() => (
+            <tr key={address}>
+            <td>{shortenAddress(address)}</td>
+              <td>{tokenBalance}</td>
+            </tr>
+            )}
+              </tbody>
+              </table>
+                </div>
+                  <div>
+                    <h2>Active Proposals {vote.vote}</h2>
+                    <form
+                  onSubmit={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
 
                 //before we do async things, we want to disable the button to prevent double clicks
                 setIsVoting(true);
 
                 // lets get the votes from the form for the values
                 const votes = proposals.map((proposal) => {
-                  const voteResult = {
+                    const voteResult = {
                     proposalId: proposal.proposalId,
                     //abstain by default
                     vote: 2,
